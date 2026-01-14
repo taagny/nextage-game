@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nextage Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="icons-left" style="display: flex; gap: 20px; align-items: center;">
+            <span id="ranking-btn" style="cursor: pointer;" title="Ranking">🏆</span>
+            <span id="donate-btn" style="cursor: pointer;" title="Apoiadores">💚</span>
+        </div>
+        <h1 class="logo">NEXTAGE</h1>
+<div class="icons-right">
+            <span id="info-btn" style="cursor:pointer" title="Como Jogar">ℹ️</span>
+            <button class="login-btn-header" id="open-login-btn">FAZER LOGIN</button>
+        </div>
+<div id="user-menu">
+            <div id="user-name-display" class="user-name-display">Carregando...</div>
+            <button onclick="sairDaConta()" class="logout-btn">
+                <svg style="width: 20px; height: 20px; fill: white;" viewBox="0 0 24 24">
+                    <path d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012 2v2h-2V4H5v16h9v-2h2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2h9z"/>
+                </svg>
+                Sair da Conta
+            </button>
+        </div>
+    </header>
+
+    <div class="game-container">
+        <div id="tile-container" class="tile-container"></div>
+    </div>
+
+    <div id="keyboard-container" class="keyboard-container"></div>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button id="close-modal" class="close-button">&times;</button>
+            <div id="modal-icon" class="modal-icon"></div>
+            
+            <h2 id="modal-title"></h2>
+            <p id="modal-word-reveal" class="word-reveal"></p>
+
+            <!-- --- O CÓDIGO QUE ESTAVA FALTANDO (FOGUINHO) --- -->
+            <div id="streak-display" style="display: none; margin: 10px auto; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; width: fit-content;">
+                <span style="font-size: 2rem;">🔥</span>
+                <div style="display: flex; flex-direction: column; line-height: 1; text-align: left;">
+                    <span style="font-size: 0.7rem; font-weight: bold; color: #aaa; text-transform: uppercase;">Sequência</span>
+                    <span id="streak-number" style="font-size: 1.5rem; font-weight: bold; color: #ff9f43;">0</span>
+                </div>
+            </div>
+            <!-- ----------------------------------------------- -->
+
+            <div id="mini-grid" class="mini-grid"></div>
+            
+            <div class="modal-buttons">
+                <button id="share-btn" class="share-btn">Compartilhar 🔗</button>
+                <button id="reset-game" class="new-game-btn">Novo Jogo 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-overlay" class="modal-overlay">
+        <div class="modal-content login-card">
+            <button id="close-login" class="close-button">&times;</button>
+            <h1 class="logo-modal">NEXTAGE</h1>
+            <div id="auth-container"></div>
+        </div>
+    </div>
+
+    <div id="help-overlay" class="modal-overlay">
+        <div class="modal-content help-card">
+            <button id="close-help" class="close-button">&times;</button>
+            <h2 class="help-title">COMO JOGAR</h2>
+            <div class="help-section">
+                <div class="example-row">
+                    <div class="tile green-overlay">P</div>
+                    <div class="tile">O</div>
+                    <div class="tile">D</div>
+                    <div class="tile">A</div>
+                    <div class="tile">M</div>
+                </div>
+                <p>A letra <b>P</b> está na palavra e na posição correta.</p>
+                <div class="example-row">
+                    <div class="tile">T</div>
+                    <div class="tile">R</div>
+                    <div class="tile">E</div>
+                    <div class="tile">N</div>
+                    <div class="tile yellow-overlay">S</div>
+                </div>
+                <p>A letra <b>S</b> está na palavra, mas não na posição correta.</p>
+                <div class="example-row">
+                    <div class="tile grey-overlay">F</div>
+                    <div class="tile grey-overlay">O</div>
+                    <div class="tile grey-overlay">N</div>
+                    <div class="tile grey-overlay">T</div>
+                    <div class="tile grey-overlay">E</div>
+                </div>
+                <p>As letras cinza não contêm na palavra.</p>
+            </div>
+            <div class="about-section">
+                <hr style="border-color: #444; margin: 25px 0;">
+                <h3>Sobre</h3>
+                <p>NEXTAGE é uma versão baseada no charada.app. Me chamo Taagny Augusto, comecei a criar conteúdo desse
+                    tipo de jogo e resolvi criar o meu próprio. ESPERO QUE GOSTEM !!!</p>
+                    <div class="social-links-container">
+                
+                <!-- Instagram -->
+                <a href="https://instagram.com/taagny_augusto/" target="_blank" class="social-link-btn instagram">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    Instagram
+                </a>
+
+                <!-- TikTok -->
+                <a href="https://tiktok.com/@meunometaagny" target="_blank" class="social-link-btn tiktok">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.65-1.62-1.12-1.09 2.3-3.8 12.03-10.93 11.23-7.14-.8-10.46-9.76-4.63-14.77 2.87-2.53 6.89-2.58 10.15-.35.18.12.24.43.21.67-.14 1.32-.05 2.66-.05 4.07-2.77-1.35-6.17-.43-7.85 2.1-2.43 3.65-.63 8.78 3.79 9.17 3.51.31 6.84-2.18 7.21-5.69.21-2.02.02-4.06.02-6.09.01-2.75.01-5.49.01-8.24Z"/></svg>
+                    TikTok
+                </a>
+
+                <!-- LivePix -->
+                <a href="https://livepix.gg/taagny" target="_blank" class="social-link-btn livepix">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    LivePix
+                </a>
+
+            </div>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="ranking-overlay" class="modal-overlay">
+    <div class="modal-content ranking-card">
+        <button id="close-ranking" class="close-button">&times;</button>
+        
+        <!-- Título com a fonte de Terror -->
+        <h1 class="ranking-title">
+            RANKING<br>NEXTAGE
+        </h1>
+
+        <!-- Cabeçalho da Tabela -->
+        <div class="ranking-header-row">
+            <span class="col-top">TOP</span>
+            <span class="col-name" style="text-align: left;">JOGADOR</span>
+            <span class="col-stat">TENTATIVAS</span>
+            <span class="col-stat">SEQUENCIAS</span>
+        </div>
+
+        <!-- Lista de Jogadores (Scroll) -->
+        <div class="ranking-list-container">
+            
+            <!-- 1º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">🏆 1</span>
+                <span class="col-name">KAIQUE PEREIRA</span>
+                <span class="col-stat highlight-blue">12</span>
+                <span class="col-stat highlight-blue">294</span>
+            </div>
+
+            <!-- 2º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">🥈 2</span>
+                <span class="col-name">LETÍCIA SANTOS</span>
+                <span class="col-stat highlight-blue">43</span>
+                <span class="col-stat highlight-blue">240</span>
+            </div>
+
+            <!-- 3º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">🥉 3</span>
+                <span class="col-name">RENAN PACHECO</span>
+                <span class="col-stat highlight-blue">2</span>
+                <span class="col-stat highlight-blue">240</span>
+            </div>
+
+            <!-- 4º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">4</span>
+                <span class="col-name">GABRIELLA LEITE</span>
+                <span class="col-stat highlight-blue">31</span>
+                <span class="col-stat highlight-blue">231</span>
+            </div>
+
+            <!-- 5º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">5</span>
+                <span class="col-name">MIRELLE PATRICIA</span>
+                <span class="col-stat highlight-blue">5</span>
+                <span class="col-stat highlight-blue">230</span>
+            </div>
+
+            <!-- 6º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">6</span>
+                <span class="col-name">CAUAN SILVA</span>
+                <span class="col-stat highlight-blue">12</span>
+                <span class="col-stat highlight-blue">225</span>
+            </div>
+            
+            <!-- 7º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">7</span>
+                <span class="col-name">DANIEL</span>
+                <span class="col-stat highlight-blue">3</span>
+                <span class="col-stat highlight-blue">220</span>
+            </div>
+            
+             <!-- 8º Lugar -->
+            <div class="ranking-row">
+                <span class="col-top">8</span>
+                <span class="col-name">ANA CAROLINE</span>
+                <span class="col-stat highlight-blue">1</span>
+                <span class="col-stat highlight-blue">200</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ÁREA DO DESENVOLVEDOR (VERSÃO FINAL COMPLETA) -->
+<div id="admin-overlay" class="admin-overlay" style="display: none;">
+    <div class="admin-content" style="max-height: 90vh; overflow-y: auto;">
+        <button id="close-admin" class="close-button">&times;</button>
+        <h1 class="logo-modal" style="color: #00ff00; text-shadow: 0 0 10px #00ff00; margin-top: 0;">DEV MODE</h1>
+        
+        <!-- 1. ADICIONAR PALAVRA -->
+        <div class="admin-section">
+            <h3>➕ Adicionar Palavra</h3>
+            <input type="text" id="new-word-input" placeholder="Ex: TESTE" maxlength="5" style="text-transform: uppercase;">
+            <button onclick="adicionarPalavraAoBanco()" class="admin-btn">SALVAR</button>
+        </div>
+
+        <!-- 3. BANIR JOGADOR -->
+        <div class="admin-section">
+            <h3>🚫 Banir Jogadores</h3>
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <input type="text" id="ban-search-input" placeholder="Nome..." style="width: 70%; padding: 8px; background: #222; border: 1px solid #ff3b3b; color: white;">
+                <button onclick="buscarJogadorParaBanir()" class="admin-btn" style="background: #a00; margin: 0; padding: 8px;">BUSCAR</button>
+            </div>
+            <div id="ban-list-container" style="max-height: 100px; overflow-y: auto; text-align: left; background: #000; border: 1px solid #333; padding: 5px;">
+                <p style="color: #666; text-align: center; font-size: 0.8rem;">Busque um nome...</p>
+            </div>
+        </div>
+
+        <!-- 4. ADICIONAR DOADOR -->
+        <div class="admin-section">
+            <h3>💸 Adicionar Doador</h3>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="donor-name" placeholder="Nome" style="width: 50%; padding: 5px; background: #222; border: 1px solid #ff3b3b; color: white;">
+                <input type="number" id="donor-value" placeholder="R$" style="width: 30%; padding: 5px; background: #222; border: 1px solid #ff3b3b; color: white;">
+            </div>
+            <button onclick="adicionarDoadorManual()" class="admin-btn" style="background: #ff3b3b; color: white; margin-top: 5px; width: 100%;">ADD AO MURAL</button>
+        </div>
+
+        <!-- 5. GERENCIAR DOAÇÕES -->
+        <div class="admin-section">
+            <h3>🗑️ Excluir Doações</h3>
+            <button onclick="carregarDoacoesAdmin()" class="admin-btn" style="background: #333; font-size: 0.8rem; width: 100%; margin-bottom: 10px;">🔄 CARREGAR LISTA</button>
+            <div id="admin-donations-list" style="max-height: 120px; overflow-y: auto; background: #000; border: 1px solid #333; padding: 5px; text-align: left;">
+                <p style="color: #666; text-align: center; font-size: 0.8rem;">Clique em carregar...</p>
+            </div>
+        </div>
+
+        <!-- 6. ZONA DE PERIGO (NOVO) -->
+        <div class="admin-section" style="border-color: #ff0000; border-bottom: none;">
+            <h3 style="color: #ff0000;">⚠️ Zona de Perigo</h3>
+            <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Isso vai zerar a sequência (foguinho) de TODOS os jogadores.</p>
+            
+            <button onclick="zerarTodasSequencias()" class="admin-btn" style="background: #500; border: 1px solid #ff0000; width: 100%; font-size: 0.9rem;">
+                ZERAR TODAS SEQUÊNCIAS 💀
+            </button>
+        </div>
+
+        <!-- ESTATÍSTICAS -->
+        <div class="admin-section" style="border: none; border-top: 1px solid #333; padding-top: 15px;">
+            <h3>📊 Estatísticas</h3>
+            <p>Jogadores Totais: <span id="total-users-count" style="color: #00ff00;">...</span></p>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL DE DOAÇÃO (VERSÃO FINAL RED) -->
+<div id="donate-overlay" class="modal-overlay">
+    <div class="modal-content donate-card">
+        <button id="close-donate" class="close-button">&times;</button>
+        
+        <!-- Título -->
+        <h2 class="donate-title">APOIADORES</h2>
+        
+        <p class="donate-subtitle">
+            Ajude a manter o servidor online!<br>
+            Sua doação aparece aqui em baixo 👇
+        </p>
+
+        <!-- Botão -->
+        <a href="https://livepix.gg/taagny" target="_blank" class="donate-cta-btn">
+            MANDAR PIX 💸
+        </a>
+
+        <!-- Lista -->
+        <div class="donors-container">
+            <h3 class="donate-list-title">Últimos Apoiadores</h3>
+            <div id="donors-list" class="donors-list-scroll">
+                <p class="donate-loading">Carregando mural...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOTÃO FLUTUANTE DE ENGRENAGEM (SÓ APARECE PRO DONO) -->
+<div id="admin-btn-float" style="display: none; position: fixed; bottom: 20px; right: 20px; font-size: 2rem; cursor: pointer; z-index: 4000;">
+    ⚙️
+</div>
+
+<!-- Importando o Firebase (Versão 9) -->
+<!-- CONFIGURAÇÃO DO FIREBASE (CORRIGIDA) -->
+<script type="module">
+  // 1. Importar as funções necessárias do Google
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    GoogleAuthProvider,  
+    FacebookAuthProvider,
+    signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    getDocs, 
+    setDoc, 
+    doc, 
+    updateDoc, 
+    query, 
+    orderBy, 
+    limit,
+    increment,
+    deleteDoc,
+    where
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  // 2. Cole AQUI o código que você copiou do site do Firebase (substitua este bloco abaixo)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDShR2cu3Bze7qbJ6XC68vCxuFs57o07rs",
+    authDomain: "nextage-d6d48.firebaseapp.com",
+    projectId: "nextage-d6d48",
+    storageBucket: "nextage-d6d48.firebasestorage.app",
+    messagingSenderId: "802996452996",
+    appId: "1:802996452996:web:77c35300bda7397b33ccd1"
+  };
+
+  // 3. Inicializar o Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  console.log("🔥 Firebase carregado com sucesso!");
+
+  // 4. EXPORTAÇÃO PARA O JAVASCRIPT (AQUI ESTAVA O ERRO)
+  window.auth = auth;
+  window.db = db;
+  
+  // Auth Básico
+  window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+  window.signOut = signOut;
+  window.onAuthStateChanged = onAuthStateChanged;
+  
+  // Auth Social (CORREÇÃO DO SEU ERRO)
+  window.GoogleAuthProvider = GoogleAuthProvider;     // <--- O ERRO ERA A FALTA DISSO
+  window.FacebookAuthProvider = FacebookAuthProvider; // <--- E DISSO
+  window.signInWithPopup = signInWithPopup;           // <--- E DISSO
+
+  // Banco de Dados
+  window.collection = collection;
+  window.addDoc = addDoc;
+  window.getDocs = getDocs;
+  window.setDoc = setDoc;
+  window.doc = doc;
+  window.updateDoc = updateDoc;
+  window.query = query;
+  window.orderBy = orderBy;
+  window.limit = limit;
+  window.increment = increment;
+  window.deleteDoc = deleteDoc;
+  window.where = where;
+
+  console.log("✅ Firebase Configurado Corretamente!");
+
+</script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,833 @@
+body { 
+    background-color: #1a1010; 
+    color: white; 
+    font-family: 'Roboto', sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    margin: 0; 
+    height: 100vh; 
+    overflow: hidden; 
+}
+
+header {
+    display: flex;
+    justify-content: space-between; /* Espalha os itens laterais */
+    align-items: center;
+    width: 100%;
+    padding: 15px 40px;
+    box-sizing: border-box;
+    position: relative; /* Importante para o logo se posicionar */
+    min-height: 110px; /* Aumentei a altura do header para caber o logo maior */
+    z-index: 10;
+}
+
+.logo {
+    font-family: 'Creepster', cursive;
+    color: #ff3b3b;
+    
+    /* TAMANHO E ESTILO */
+    font-size: 5rem; /* Aumentei bastante (era 2.8rem) */
+    letter-spacing: 3px; /* Espaça as letras para alinhar melhor com o grid */
+    text-shadow: 4px 4px 0px #000; /* Sombra forte para destacar */
+    
+    /* CENTRALIZAÇÃO PERFEITA */
+    position: absolute; /* Ignora os botões laterais */
+    left: 50%; 
+    top: 55%; /* Empurrei levemente para baixo para alinhar o centro visual */
+    transform: translate(-50%, -50%); /* Centraliza no meio exato da tela */
+    
+    margin: 0;
+    pointer-events: none; /* Evita cliques acidentais no logo */
+    white-space: nowrap; /* Garante que o texto não quebre linha */
+}
+
+@media (max-width: 768px) {
+    .logo {
+        font-size: 3rem; /* No celular fica menor para não vazar */
+    }
+    header {
+        padding: 10px 20px;
+        min-height: 80px;
+    }
+}
+
+.login-btn-header { 
+    background-color: #ff3b3b; 
+    border: none; 
+    padding: 10px 20px; 
+    color: black; 
+    font-weight: bold; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+}
+
+/* --- ÁREA DO JOGO --- */
+.game-container { 
+    flex-grow: 1; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.tile-container { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+}
+.tile-row { 
+    display: flex; 
+    gap: 6px; 
+}
+.tile { 
+    width: 60px; 
+    height: 60px; 
+    border: 2px solid #3a3a3c; 
+    background-color: #2c2121; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 2rem; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+}
+
+.icons-left span {
+    font-size: 3rem; /* Aumentei para ficar bem grande */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); /* Sombra para dar destaque */
+    cursor: default;
+}
+
+.icons-right {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o ícone de Ajuda e o Botão de Login */
+}
+
+#info-btn {
+    font-size: 2.5rem; /* Mesmo tamanho do troféu */
+    transition: transform 0.2s ease; /* Animação suave */
+    line-height: 1; /* Remove espaços extras verticais */
+}
+
+#info-btn:hover {
+    transform: scale(1.15); /* Cresce um pouco quando passa o mouse */
+}
+
+/* Cores do Jogo */
+.green-overlay { background-color: #538d4e !important; border-color: #538d4e !important; }
+.yellow-overlay { background-color: #b59f3b !important; border-color: #b59f3b !important; }
+.grey-overlay { background-color: #3a3a3c !important; border-color: #3a3a3c !important; }
+
+/* Animação de Erro (Tremer) */
+.shake { animation: shake 0.5s; }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* --- TECLADO --- */
+.keyboard-container { 
+    padding-bottom: 30px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    align-items: center; 
+}
+.key-row { display: flex; gap: 6px; }
+.keyboard-button { 
+    width: 44px; 
+    height: 58px; 
+    border-radius: 4px; 
+    border: none; 
+    background-color: #4a3838; 
+    color: white; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+.keyboard-button.wide { width: 70px; }
+
+/* --- MODAIS (GERAL) --- */
+.modal-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.85); 
+    backdrop-filter: blur(8px); 
+    z-index: 2000; 
+    justify-content: center; 
+    align-items: center; 
+}
+.modal-content { 
+    background-color: #1a1a2e; 
+    padding: 35px; 
+    border-radius: 20px; 
+    width: 340px; 
+    text-align: center; 
+    border: 1px solid #333; 
+    position: relative; 
+}
+.close-button { 
+    position: absolute; 
+    top: 10px; 
+    right: 15px; 
+    background: none; 
+    border: none; 
+    color: #fff; 
+    font-size: 30px; 
+    cursor: pointer; 
+    z-index: 10;
+}
+
+/* --- ESTILOS DO LOGIN E CADASTRO (Novo Design) --- */
+.login-card {
+    background-color: #4a3333 !important; /* Marrom Escuro */
+    width: 380px;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: none;
+}
+
+.logo-modal {
+    font-family: 'Creepster', cursive;
+    color: #ff3b3b;
+    font-size: 3rem;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 0px #000;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: none;
+    background: #a5a5a5; /* Cinza */
+    color: #1a1010;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+.auth-input::placeholder { color: #333; }
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: #221515; /* Botão escuro para Login */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 10px;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+.auth-submit-btn:hover { background: #000; }
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #1a1010;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #1a1010;
+}
+.separator::before { margin-right: 10px; }
+.separator::after { margin-left: 10px; }
+
+.social-btn {
+    width: 100%; /* Garante que ocupe a largura total, igual aos inputs */
+    height: 48px; /* Altura fixa para ficar igual aos inputs */
+    padding: 0 15px; /* Espaçamento lateral */
+    margin-bottom: 10px; /* Espaço entre um botão e outro */
+    border-radius: 6px;
+    border: none;
+    background: #a5a5a5; /* Cinza igual aos inputs */
+    color: #1a1010; /* Cor do texto */
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    
+    /* Alinhamento Flexbox para ícone e texto ficarem na mesma linha */
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 12px; /* Espaço entre o ícone e o texto */
+    transition: background 0.2s;
+}
+
+.social-btn:hover {
+    background: #bfbfbf; /* Cor ao passar o mouse */
+}
+
+/* IMPORTANTE: Isso impede que o ícone fique gigante */
+.social-icon {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px; /* Impede que o ícone seja esmagado */
+}
+
+.auth-switch {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #ccc;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.auth-switch:hover { color: white; text-decoration: underline; }
+
+/* --- AJUDA E RESULTADO --- */
+.help-card { background-color: #3d2a2a !important; border: none; }
+.help-title { font-family: 'Creepster', cursive; color: #ff3b3b; font-size: 2rem; margin-bottom: 15px; }
+.example-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
+.example-row .tile { width: 40px; height: 40px; font-size: 1.2rem; }
+.about-section p { font-size: 0.8rem; text-align: left; opacity: 0.8; }
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    justify-content: center;
+    margin: 20px auto;
+    width: fit-content;
+}
+.mini-tile {
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+}
+.modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.share-btn, .new-game-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.share-btn { background-color: #538d4e; color: white; }
+.new-game-btn { background-color: #ff3b3b; color: white; }
+
+/* Mensagem Flutuante (Toast) */
+.message-container {
+    position: fixed;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 3000;
+}
+.message {
+    background-color: white;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    animation: fadeOut 1s ease-in-out 1.5s forwards;
+}
+@keyframes fadeOut { to { opacity: 0; } }
+
+/* --- ESTILOS DO RANKING --- */
+
+/* --- DESIGN DO RANKING (IDÊNTICO À IMAGEM) --- */
+
+.ranking-card {
+    background-color: #3e2b2b !important; /* Marrom escuro da imagem */
+    width: 550px;
+    max-width: 95%;
+    height: 75vh; /* Altura fixa para caber na tela */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border: none;
+}
+
+/* Título RANKING NEXTAGE */
+.ranking-title {
+    font-family: 'Creepster', cursive;
+    color: #ff3b3b; /* Vermelho sangue */
+    font-size: 3rem;
+    line-height: 0.9; /* Letras próximas verticalmente */
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-shadow: 3px 3px 0px #1a1010; /* Sombra preta para destacar */
+    letter-spacing: 2px;
+}
+
+/* Container da lista (Scroll) */
+.ranking-list-container {
+    flex-grow: 1;
+    overflow-y: auto; /* Permite rolar para baixo */
+    padding-right: 8px;
+    margin-top: 10px;
+}
+
+/* Customização da Barra de Rolagem */
+.ranking-list-container::-webkit-scrollbar { width: 6px; }
+.ranking-list-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+.ranking-list-container::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+/* Grid Layout (Define a largura das colunas) */
+.ranking-header-row, .ranking-row {
+    display: grid;
+    /* Colunas: TOP (pequeno) | NOME (grande) | STAT 1 | STAT 2 */
+    grid-template-columns: 0.8fr 3fr 1fr 1fr; 
+    align-items: center;
+    padding: 12px 15px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.8rem;
+}
+
+/* Cabeçalho (TOP, JOGADOR...) */
+.ranking-header-row {
+    background: white;
+    color: #1a1010;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px; /* Espaço antes da lista começar */
+}
+
+/* Linhas dos Jogadores */
+.ranking-row {
+    background: white;
+    color: #1a1010;
+    border-radius: 4px;
+    margin-bottom: 8px; /* Espacinho branco entre cada jogador */
+    font-weight: 600;
+}
+
+/* Estilos de Texto dentro das linhas */
+.col-top {
+    color: #555;
+    font-weight: bold;
+    display: flex; 
+    align-items: center; 
+    gap: 5px;
+}
+.col-name {
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+.col-stat {
+    text-align: center;
+}
+
+/* Cor Azul para os números (Igual da imagem) */
+.highlight-blue {
+    color: #3b82f6; /* Azul brilhante */
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* --- BOTÃO DE PERFIL E MENU SAIR --- */
+
+/* Transforma o botão retangular em uma bolinha */
+.profile-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%; /* Faz ficar redondo */
+    background-color: #eee;
+    color: #1a1010;
+    font-size: 1.5rem;
+    border: 2px solid #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.profile-btn:hover {
+    transform: scale(1.1);
+    background-color: #fff;
+}
+
+/* --- MENU DE PERFIL (CORRIGIDO) --- */
+
+/* --- MENU DE PERFIL PREMIUM --- */
+
+#user-menu {
+    display: none; /* Começa escondido */
+    
+    /* Posicionamento */
+    position: absolute;
+    top: 85px;
+    right: 35px;
+    
+    /* --- AQUI ESTÁ A CORREÇÃO --- */
+    /* Ao mudar para 'flex' via JS, ele respeitará a coluna */
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    /* ---------------------------- */
+
+    /* Estilo Visual (Dark Glass) */
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(10px);
+    
+    /* Borda e Sombra */
+    border: 1px solid #ff3b3b;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 59, 59, 0.2);
+    
+    padding: 20px;
+    width: 220px;
+    z-index: 5000;
+    
+    animation: fadeInMenu 0.2s ease-out;
+}
+
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Nome do Usuário */
+.user-name-display {
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700; /* Mais negrito */
+    font-size: 1rem;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Linha divisória sutil */
+    letter-spacing: 1px;
+}
+
+/* --- BOTÃO DE SAIR ESTILIZADO --- */
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    /* Gradiente Vermelho */
+    background: linear-gradient(135deg, #ff3b3b 0%, #a60000 100%);
+    color: white;
+    
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    
+    /* Flex para alinhar ícone e texto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Efeito ao passar o mouse */
+.logout-btn:hover {
+    transform: translateY(-2px); /* Sobe um pouquinho */
+    box-shadow: 0 6px 12px rgba(255, 59, 59, 0.4); /* Brilho vermelho */
+    background: linear-gradient(135deg, #ff5c5c 0%, #c40000 100%); /* Fica mais claro */
+}
+
+/* Efeito ao clicar */
+.logout-btn:active {
+    transform: scale(0.98);
+}
+
+/* --- ÁREA DO ADMIN --- */
+.admin-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 6000; /* Fica acima de tudo */
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-content {
+    background-color: #111;
+    border: 2px solid #00ff00; /* Verde Hacker */
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    position: relative;
+}
+
+.admin-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 20px;
+}
+
+.admin-section h3 {
+    color: #00ff00;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+}
+
+#new-word-input {
+    width: 70%;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.admin-btn {
+    padding: 10px 20px;
+    background: #005500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.admin-btn:hover { background: #007700; }
+
+/* Item da lista de banir */
+.ban-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #222;
+    font-size: 0.9rem;
+}
+
+.ban-item:last-child {
+    border-bottom: none;
+}
+
+.ban-item span {
+    color: #ddd;
+}
+
+.btn-excluir {
+    background: #ff3b3b;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.btn-excluir:hover {
+    background: #f00;
+}
+
+/* --- BOTÕES DE REDES SOCIAIS (SOBRE) --- */
+
+.social-links-container {
+    display: flex;
+    flex-direction: column; /* Um embaixo do outro (celular) */
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Estilo Base do Botão */
+.social-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espaço entre ícone e texto */
+    
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none; /* Remove o sublinhado do link */
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efeito ao passar o mouse */
+.social-link-btn:hover {
+    transform: translateY(-3px); /* Sobe um pouquinho */
+    filter: brightness(1.2); /* Fica mais brilhante */
+}
+
+/* Cores Específicas */
+
+/* Instagram (Degradê Oficial) */
+.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    box-shadow: 0 4px 10px rgba(220, 39, 67, 0.4);
+}
+
+/* TikTok (Preto com borda sutil) */
+.tiktok {
+    background-color: #000;
+    border: 1px solid #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* LivePix (Verde Dinheiro) */
+.livepix {
+    background-color: #00bfa5;
+    box-shadow: 0 4px 10px rgba(0, 191, 165, 0.4);
+}
+
+/* Para telas maiores (PC), coloca os botões lado a lado */
+@media (min-width: 600px) {
+    .social-links-container {
+        flex-direction: row; /* Lado a lado */
+        justify-content: center;
+    }
+    .social-link-btn {
+        flex: 1; /* Todos com a mesma largura */
+        font-size: 0.9rem;
+    }
+}
+
+/* --- MODAL DE DOAÇÃO (VISUAL CORRIGIDO - TEMA RED) --- */
+
+/* --- CSS DO MURAL (FORÇANDO VERMELHO) --- */
+
+/* Fundo e Borda do Cartão */
+.donate-card {
+    background-color: #3e2b2b !important;
+    border: 2px solid #ff3b3b !important;
+    box-shadow: 0 0 20px rgba(255, 59, 59, 0.3) !important;
+    width: 400px;
+    max-width: 90%;
+}
+
+/* Título */
+.donate-title {
+    font-family: 'Creepster', cursive;
+    color: #ff3b3b !important;
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+    text-shadow: 3px 3px 0px #000;
+    text-align: center;
+}
+
+/* Subtítulo */
+.donate-subtitle {
+    font-size: 0.9rem;
+    color: #ccc !important;
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Botão Vermelho */
+.donate-cta-btn {
+    display: block;
+    background-color: #ff3b3b !important;
+    color: white !important;
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 15px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin: 10px auto 20px auto;
+    width: 80%;
+    border: 2px solid #a60000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+
+.donate-cta-btn:hover {
+    transform: scale(1.05);
+    background-color: #ff5555 !important;
+}
+
+/* Container da Lista */
+.donors-list-scroll {
+    background: rgba(0,0,0,0.5) !important;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 10px;
+    height: 180px;
+    overflow-y: auto;
+}
+
+/* Item Doador */
+.donor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1010 !important;
+    color: white !important;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    border-left: 5px solid #ff3b3b !important; /* Faixa vermelha */
+}
+
+/* Valor do Pix */
+.donor-badge {
+    color: #ff3b3b !important; /* Texto vermelho */
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+/* Títulos pequenos */
+.donate-list-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #888;
+    text-align: center;
+    margin-bottom: 5px;
+}
+.donate-loading {
+    color: #666;
+    font-size: 0.8rem;
+    text-align: center;
+    padding-top: 20px;
+}
+
+/* Item da lista de doações no Admin */
+.admin-donation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    padding: 8px 5px;
+    font-size: 0.85rem;
+    color: #ddd;
+}
+
+.admin-donation-item span {
+    display: block;
+}
+
+.btn-del-don {
+    background: #a00;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.7rem;
+    margin-left: 10px;
+}
+.btn-del-don:hover {
+    background: #f00;
+}
